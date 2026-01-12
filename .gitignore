@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+.pytest_cache/
+
+
+# Virtual Environment
+venv/
+env/
+.venv/
+
+
+# VS Code
+.vscode/
+
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+
+# Logs & temp
+*.log
+*.tmp
+
+
+# Optional: dotenv / secrets
+.env
+.env.local
+
+# ML Weights
+gfpgan/weights/
+*.pth
