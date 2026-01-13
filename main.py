@@ -1,49 +1,13 @@
-import cv2
-import numpy as np
-import base64
-import torch
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from gfpgan import GFPGANer
-import os
-import ssl
-
-# Sertifika hatası için
-ssl._create_default_https_context = ssl._create_unverified_context
-# -------------------------------------------------------------
-
-# --- AYARLAR ---
-DEVICE = 'cpu'
-
-# Model ayarları
-MODEL_PATH = os.path.join("gfpgan", "weights", "GFPGANv1.4.pth")
+from image_utils import decode_base64_image, encode_image_base64
+from model_startup import get_restorer, load_model as load_gfpgan_model
 
 app = FastAPI(title="Face Restorer API")
-restorer = None
 
 @app.on_event("startup")
-def load_model():
-    global restorer
-    print(f"Model yükleniyor... Cihaz: {DEVICE}")
-    
-    if not os.path.exists(MODEL_PATH):
-        print(f"Model dosyası ({MODEL_PATH}) bulunamadı")
-        restorer = None
-        return
-    
-    try:
-        restorer = GFPGANer(
-            model_path=MODEL_PATH,
-            upscale=1,
-            arch='clean', 
-            channel_multiplier=2, 
-            bg_upsampler=None,
-            device=torch.device(DEVICE)
-        )
-        print("✅ GFPGAN Modeli Hazır!")
-    except Exception as e:
-        print(f"❌ Model yükleme hatası: {e}")
-        restorer = None
+def on_startup():
+    load_gfpgan_model()
 
 class ImageRequest(BaseModel):
     image_base64: str
@@ -53,17 +17,13 @@ class ImageResponse(BaseModel):
 
 @app.post("/restore", response_model=ImageResponse)
 async def restore_face(payload: ImageRequest):
+    restorer = get_restorer()
     if restorer is None:
         raise HTTPException(status_code=500, detail="Model yüklü değil.")
 
     try:
         # 1. Base64 -> Image
-        image_bytes = base64.b64decode(payload.image_base64)
-        np_arr = np.frombuffer(image_bytes, np.uint8)
-        img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
-
-        if img is None:
-            raise HTTPException(status_code=400, detail="Görüntü okunamadı.")
+        img = decode_base64_image(payload.image_base64)
 
         # 2. GFPGAN
         _, _, restored_img = restorer.enhance(
@@ -74,8 +34,7 @@ async def restore_face(payload: ImageRequest):
         )
 
         # 3. Image -> Base64
-        retval, buffer = cv2.imencode('.jpg', restored_img, [int(cv2.IMWRITE_JPEG_QUALITY), 95])
-        base64_output = base64.b64encode(buffer).decode('utf-8')
+        base64_output = encode_image_base64(restored_img)
 
         return {"restored_base64": base64_output}
 
