@@ -1,13 +1,13 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from image_utils import decode_base64_image, encode_image_base64
-from model_startup import get_restorer, load_model as load_gfpgan_model
+from model_startup import get_restorer, load_model
 
 app = FastAPI(title="Face Restorer API")
 
 @app.on_event("startup")
 def on_startup():
-    load_gfpgan_model()
+    load_model()
 
 class ImageRequest(BaseModel):
     image_base64: str
