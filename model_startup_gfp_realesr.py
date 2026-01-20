@@ -10,8 +10,8 @@ ssl._create_default_https_context = ssl._create_unverified_context
 
 # --- AYARLAR ---
 DEVICE = "cpu"
-MODEL_PATH = os.path.join("models", "weights", "GFPGANv1.4.pth")
-BG_UPSAMPLER_MODEL_PATH = os.path.join("models", "weights", "RealESRGAN_x4plus.pth")
+MODEL_PATH = os.path.join("weights", "GFPGANv1.4.pth")
+BG_UPSAMPLER_MODEL_PATH = os.path.join("weights", "RealESRGAN_x4plus.pth")
 
 restorer = None
 
