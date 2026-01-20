@@ -21,7 +21,9 @@ def resize_if_needed(img, max_size=180):
     print(f"[i] Resizing input: {w}x{h} → {new_w}x{new_h}")
     return img.resize((new_w, new_h), Image.LANCZOS)
 
-def upscale_image(pipe, img, prompt="", steps=30):
+def upscale_image(pipe, img,):
+    steps = 60
+    prompt = "high quality portrait"
     result = pipe(prompt=prompt, image=img, num_inference_steps=steps)
     return result.images[0]
 
@@ -40,7 +42,7 @@ def main(args):
     pipe.enable_attention_slicing()
 
     print("[+] Upscaling… This can take a while on CPU/MPS!")
-    upscaled = upscale_image(pipe, low_res_img, prompt=args.prompt, steps=args.steps)
+    upscaled = upscale_image(pipe, low_res_img)
 
     print(f"[+] Saving output to {args.output}")
     upscaled.save(args.output)
@@ -50,6 +52,4 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Stable Diffusion x4 Upscaler")
     parser.add_argument("--input", "-i", type=str, required=True, help="Path to low-res image")
     parser.add_argument("--output", "-o", type=str, default="upscaled.png", help="Save path")
-    parser.add_argument("--prompt", "-p", type=str, default="", help="Upscaler prompt (optional)")
-    parser.add_argument("--steps", "-s", type=int, default=30, help="Inference steps (quality vs. time)")
     main(parser.parse_args())

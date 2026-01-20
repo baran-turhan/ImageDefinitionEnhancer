@@ -29,8 +29,9 @@ async def restore_face(payload: ImageRequest):
         _, _, restored_img = restorer.enhance(
             img, 
             has_aligned=False, 
-            only_center_face=False, 
-            paste_back=True
+            only_center_face=True, 
+            paste_back=True,
+            weight=0.1
         )
 
         # 3. Image -> Base64
