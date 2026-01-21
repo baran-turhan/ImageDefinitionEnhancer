@@ -53,7 +53,7 @@ def load_model() -> None:
             upscale=4,
             arch="clean",
             channel_multiplier=2,
-            bg_upsampler=bg_upsampler,
+            bg_upsampler=None,
             device=torch.device(DEVICE),
         )
         print("Model hazır")

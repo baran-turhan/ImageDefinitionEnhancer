@@ -3,8 +3,8 @@ import base64
 import os
 
 API_URL = "http://127.0.0.1:8000/restore" 
-INPUT_IMAGE = "test_samples/test-TCHOZASLAN.png"           
-OUTPUT_IMAGE = "outputs_gfp_realesr/sonuc1yP00.png"
+INPUT_IMAGE = "test_samples/test-TCNTAPAN.png"           
+OUTPUT_IMAGE = "outputs_gfp_realesr/sonuc24.png"
 
 def test_api():
     if not os.path.exists(INPUT_IMAGE):
